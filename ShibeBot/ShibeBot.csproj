@@ -160,6 +160,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Data\Files.cs" />
+    <Compile Include="Modules\AudioModule.cs" />
     <Compile Include="Modules\AudioService.cs" />
     <Compile Include="Modules\SpeechModule.cs" />
     <Compile Include="Program.cs" />

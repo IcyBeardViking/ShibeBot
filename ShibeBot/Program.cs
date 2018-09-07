@@ -86,8 +86,10 @@ namespace ShibeBot
             if (!(messageParam is SocketUserMessage message)) return;
             // Create a number to track where the prefix ends and the command begins
             int argPos = 0;
+
             // Determine if the message is a command,
             if (!(message.HasMentionPrefix(client.CurrentUser, ref argPos))) return;
+
             // Create a Command Context
             var context = new SocketCommandContext(client, message);
             // Execute the command. (result does not indicate a return value, 
@@ -96,7 +98,7 @@ namespace ShibeBot
             if (!result.IsSuccess)
             {
                 await context.Channel.SendMessageAsync("*Twists head*");
-                await context.Channel.SendMessageAsync("*Confused-Bork!*  (" + result.ErrorReason + ")");
+                await context.Channel.SendMessageAsync("*Confused-Bork!*  (" + result.ErrorReason + " Use help for list of commands)");
             }
         }
 
