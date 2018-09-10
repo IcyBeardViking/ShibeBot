@@ -43,7 +43,7 @@ namespace ShibeBot.Data
         {
             public static readonly string pictureFolder = @"shibepics\";
 
-            public static string getShibePath(int index = -1, ShibeType type = ShibeType.ALL)
+            public static string getShibePath(ref int index, ShibeType type = ShibeType.ALL)
             {
                 string returnedPath = "";
 
@@ -62,10 +62,14 @@ namespace ShibeBot.Data
                 {
                     if (index >= list.Count)
                         index = list.Count - 1;
-                        returnedPath = list[index];
+                    returnedPath = list[index];
                 }
                 else
-                    returnedPath = list[randomShibeNumber(list.Count)];
+                {
+                    // so that we remember what number we picked
+                    index = randomShibeNumber(list.Count);
+                    returnedPath = list[index];
+                }
                 
 
                 return returnedPath;
