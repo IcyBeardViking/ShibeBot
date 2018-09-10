@@ -59,43 +59,7 @@ namespace ShibeBot.Data
 
         public static class Pictures
         {
-            static readonly List<string> allPictures;
-            static readonly List<string> sleepyPictures;
-            static readonly List<string> excitedPictures;
-            static readonly List<string> angeryPictures;
-            static readonly List<string> happyPictures;
-            static readonly List<string> heckPictures;
-            static readonly List<string> memePictures;
-            static readonly List<string> wowPictures;
-
-            public static readonly string pictureFolder = @"shibepics";
-            public static readonly string pictureSleepySubFolder = @"\sleepy\";
-            public static readonly string pictureExcitedSubFolder = @"\excited\";
-            public static readonly string pictureAngerySubFolder = @"\angery\";
-            public static readonly string pictureHappySubFolder = @"\happy\";
-            public static readonly string pictureHeckSubFolder = @"\heck\";
-            public static readonly string pictureMemeSubFolder = @"\meme\";
-            public static readonly string pictureWowSubFolder = @"\wow\";
-
-            static Pictures()
-            {
-                sleepyPictures  = new List<string>(Directory.GetFiles(pictureFolder + pictureSleepySubFolder));
-                excitedPictures = new List<string>(Directory.GetFiles(pictureFolder + pictureExcitedSubFolder));
-                angeryPictures  = new List<string>(Directory.GetFiles(pictureFolder + pictureAngerySubFolder));
-                happyPictures   = new List<string>(Directory.GetFiles(pictureFolder + pictureHappySubFolder));
-                heckPictures    = new List<string>(Directory.GetFiles(pictureFolder + pictureHeckSubFolder));
-                memePictures    = new List<string>(Directory.GetFiles(pictureFolder + pictureMemeSubFolder));
-                wowPictures     = new List<string>(Directory.GetFiles(pictureFolder + pictureWowSubFolder));
-                
-
-                allPictures = new List<string>(sleepyPictures);
-                allPictures.AddRange(excitedPictures);
-                allPictures.AddRange(angeryPictures);
-                allPictures.AddRange(happyPictures);
-                allPictures.AddRange(heckPictures);
-                allPictures.AddRange(memePictures);
-                allPictures.AddRange(wowPictures);
-            }
+            public static readonly string pictureFolder = @"shibepics\";
 
             public static string getShibePath(int index = -1, ShibeType type = ShibeType.ALL)
             {
@@ -103,35 +67,13 @@ namespace ShibeBot.Data
 
                 List<string> list = new List<string>();
 
-                switch (type)
+                if (type != ShibeType.ALL)
                 {
-                    case ShibeType.SLEEPY:
-                        list = new List<string>(sleepyPictures);
-                        break;
-                    case ShibeType.EXCITED:
-                        list = new List<string>(excitedPictures);
-                        break;
-                    case ShibeType.ALL:
-                        list = new List<string>(allPictures);
-                        break;
-                    case ShibeType.ANGERY:
-                        list = new List<string>(angeryPictures);
-                        break;
-                    case ShibeType.HAPPY:
-                        list = new List<string>(happyPictures);
-                        break;
-                    case ShibeType.HECK:
-                        list = new List<string>(heckPictures);
-                        break;
-                    case ShibeType.MEME:
-                        list = new List<string>(memePictures);
-                        break;
-                    case ShibeType.WOW:
-                        list = new List<string>(wowPictures);
-                        break;
-                    default:
-                        list = new List<string>(allPictures);
-                        break;
+                    list = new List<string>(Directory.GetFiles(pictureFolder + type.ToString().ToLower()));
+                }
+                else
+                {
+                    list = new List<string>(Directory.GetFiles(pictureFolder, "*.*", SearchOption.AllDirectories));
                 }
 
                 if (index > -1)
