@@ -141,7 +141,7 @@ namespace ShibeBot.Data
                         returnedPath = list[index];
                 }
                 else
-                    returnedPath = list[randomShibeNumber(sleepyPictures.Count)];
+                    returnedPath = list[randomShibeNumber(list.Count)];
                 
 
                 return returnedPath;
