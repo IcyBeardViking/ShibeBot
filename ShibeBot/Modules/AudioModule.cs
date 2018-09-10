@@ -4,6 +4,7 @@ using Discord.Commands;
 using ShibeBot.Data;
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace ShibeBot.Modules
@@ -11,6 +12,8 @@ namespace ShibeBot.Modules
     public class AudioModule : ModuleBase<SocketCommandContext>
     {
         public AudioService AudioService { get; set; }
+
+        private CommandInfo info { get; set; }
 
         [Command("join", RunMode = RunMode.Async)]
         public async Task JoinChannel(IVoiceChannel channel = null)
@@ -29,76 +32,93 @@ namespace ShibeBot.Modules
         [Command("FBI", RunMode = RunMode.Async)]
         public async Task FBI()
         {
-            await play(Files.Audio.getCommand(Files.Audio.FBI));
+            await play(info.Name);
         }
 
         [Command("USSR", RunMode = RunMode.Async)]
         public async Task USSR()
         {
-            await play(Files.Audio.getCommand(Files.Audio.USSR));
+            await play(info.Name);
         }
 
         [Command("arf", RunMode = RunMode.Async)]
         public async Task arf()
         {
-            await play(Files.Audio.getCommand(Files.Audio.arf));
+            await play(info.Name);
         }
 
         [Command("oof", RunMode = RunMode.Async)]
         public async Task oof()
         {
-            await play(Files.Audio.getCommand(Files.Audio.oof));
+            await play(info.Name);
         }
 
         [Command("bork", RunMode = RunMode.Async)]
         public async Task bork()
         {
-            await play(Files.Audio.getCommand(Files.Audio.bork));
+            await play(info.Name);
         }
 
         [Command("bork2", RunMode = RunMode.Async)]
         public async Task bork2()
         {
-            await play(Files.Audio.getCommand(Files.Audio.bork2));
+            await play(info.Name);
         }
 
         [Command("newtoy", RunMode = RunMode.Async)]
         public async Task newtoy()
         {
-            await play(Files.Audio.getCommand(Files.Audio.newtoy));
+            await play(info.Name);
         }
 
         [Command("cutelaugh", RunMode = RunMode.Async)]
         public async Task cutelaugh()
         {
-            await play(Files.Audio.getCommand(Files.Audio.cutelaugh));
+            await play(info.Name);
         }
 
         [Command("nani", RunMode = RunMode.Async)]
         public async Task nani()
         {
-            await play(Files.Audio.getCommand(Files.Audio.nani));
+            await play(info.Name);
         }
 
         [Command("omaenani", RunMode = RunMode.Async)]
         public async Task omaenani()
         {
-            await play(Files.Audio.getCommand(Files.Audio.omaenani));
+            await play(info.Name);
         }
 
         [Command("omae", RunMode = RunMode.Async)]
         public async Task omae()
         {
-            await play(Files.Audio.getCommand(Files.Audio.omae));
+            await play(info.Name);
         }
 
         [Command("play", RunMode = RunMode.Async)]
         public async Task play(string input = null)
         {
-
             IVoiceChannel channel = (Context.Message.Author as IGuildUser)?.VoiceChannel;
-            if (channel == null) { await Context.Message.Channel.SendMessageAsync("User must be in a voice channel"); return; }
-            //TODO add if bot is already in channel
+            // Checking if the current user is in a channel or not
+            if (channel == null)
+            {
+                await Context.Message.Channel.SendMessageAsync("User must be in a voice channel");
+                return;
+            }
+            
+            if (input != null)
+            {
+                try
+                {
+                    input = Files.Audio.getCommand(input);
+                }
+                catch (FileNotFoundException e)
+                {
+                    await Context.Channel.SendMessageAsync("*Twists head*");
+                    await Context.Channel.SendMessageAsync("*Confused-Bork!*  (" + e.Message + ")");
+                    return;
+                }
+            }
 
             // Checking if the bot is already in the channel
             if (AudioService.audioClient == null)
@@ -106,10 +126,6 @@ namespace ShibeBot.Modules
                 AudioService.audioClient = await channel.ConnectAsync();
             }
 
-            if (input != null)
-            {
-                input = Files.Audio.getCommand(input);
-            }
 
             await SendAsync(AudioService.audioClient, input);
             return;
@@ -146,6 +162,12 @@ namespace ShibeBot.Modules
         //#########################################################################################################################
         //#########################################################################################################################
         //#########################################################################################################################
+
+        protected override void BeforeExecute(CommandInfo command)
+        {
+            info = command;
+            base.BeforeExecute(command);
+        }
 
         private Process CreateStream(string input)
         {

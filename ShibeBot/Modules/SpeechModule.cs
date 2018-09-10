@@ -88,9 +88,9 @@ namespace ShibeBot.Modules
         {
             string reply = "Sounds I know are: \n ";
 
-            reply += String.Join("\n ", Directory.GetFiles(Files.Audio.audioFolder));
+            reply += String.Join("\n ", Directory.GetFiles(Files.Audio.audioFolder, "*.mp3"));
 
-            reply = reply.Replace("songs\\", "");
+            reply = reply.Replace("songs\\", "").Replace(".mp3","");
 
             await ReplyAsync(reply);
             return;

@@ -88,17 +88,19 @@ namespace ShibeBot
             int argPos = 0;
 
             // Determine if the message is a command,
-            if (!(message.HasMentionPrefix(client.CurrentUser, ref argPos))) return;
+            if (!(message.HasCharPrefix('-', ref argPos) || (message.HasMentionPrefix(client.CurrentUser, ref argPos)))) return;
 
             // Create a Command Context
             var context = new SocketCommandContext(client, message);
             // Execute the command. (result does not indicate a return value, 
             // rather an object stating if the command executed successfully)
+
             var result = await commands.ExecuteAsync(context, argPos, services);
             if (!result.IsSuccess)
             {
                 await context.Channel.SendMessageAsync("*Twists head*");
-                await context.Channel.SendMessageAsync("*Confused-Bork!*  (" + result.ErrorReason + " Use help for list of commands)");
+                await context.Channel.SendMessageAsync("*Confused-Bork!*  (" + result.ErrorReason + ")");
+                await context.Channel.SendMessageAsync("Use help for list of commands");
             }
         }
 
