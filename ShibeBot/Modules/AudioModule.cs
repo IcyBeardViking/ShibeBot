@@ -119,6 +119,12 @@ namespace ShibeBot.Modules
                     return;
                 }
             }
+            else
+            {
+                await Context.Channel.SendMessageAsync("*Twists head*");
+                await Context.Channel.SendMessageAsync("*Confused-Bork!*  What to play?");
+                return;
+            }
 
             // Checking if the bot is already in the channel
             if (AudioService.audioClient == null)
