@@ -19,6 +19,8 @@ namespace ShibeBot.Modules
             channel = channel ?? (Context.Message.Author as IGuildUser)?.VoiceChannel;
             if (channel == null) { await Context.Message.Channel.SendMessageAsync("User must be in a voice channel"); return; }
 
+            AudioService.leaveAfterExecution = false;
+
             // For the next step with transmitting audio, you would want to pass this Audio Client in to a service.
             AudioService.audioClient = await channel.ConnectAsync();
             return;
@@ -99,16 +101,14 @@ namespace ShibeBot.Modules
             //TODO add if bot is already in channel
 
             // Checking if the bot is already in the channel
-            if ((Context.Client.CurrentUser as IGuildUser)?.VoiceChannel == null)
+            if (AudioService.audioClient == null)
             {
-                // For the next step with transmitting audio, you would want to pass this Audio Client in to a service.
                 AudioService.audioClient = await channel.ConnectAsync();
             }
-            if (AudioService.audioClient is null) { await Context.Message.Channel.SendMessageAsync("Bork! Bork! Can't play without joining!"); return; }
 
             if (input != null)
             {
-                input = getInput(input);
+                input = Files.Audio.getCommand(input);
             }
 
             await SendAsync(AudioService.audioClient, input);
@@ -129,11 +129,16 @@ namespace ShibeBot.Modules
         {
             channel = channel ?? (Context.Client.CurrentUser as IGuildUser)?.VoiceChannel;
 
-            // if process has not exited yet, kill it
-            if (!AudioService.audioProcess.HasExited)
+            AudioService.leaveAfterExecution = true;
+
+            // if process is not null and has not exited yet, kill it
+            if ((AudioService.audioProcess != null) && !AudioService.audioProcess.HasExited)
                 AudioService.audioProcess.Kill();
 
-            await AudioService.audioClient.StopAsync();
+            if(AudioService.audioClient != null)
+                await AudioService.audioClient.StopAsync();
+
+            AudioService.audioClient = null;
             return;
         }
 
@@ -142,26 +147,6 @@ namespace ShibeBot.Modules
         //#########################################################################################################################
         //#########################################################################################################################
 
-        private string getInput(string input)
-        {
-            input = input.Trim().ToLower();
-
-            switch (input)
-            {
-                case "despacito":
-                    input = Files.Audio.getCommand(Files.Audio.despasito);
-                    break;
-                case "despacito2":
-                    input = Files.Audio.getCommand(Files.Audio.despasito2);
-                    break;
-                case "despacito3":
-                    input = Files.Audio.getCommand(Files.Audio.despasito3);
-                    break;
-            }
-
-            return input;
-        }
-
         private Process CreateStream(string input)
         {
             ProcessStartInfo ffmpeg = new ProcessStartInfo
@@ -169,15 +154,18 @@ namespace ShibeBot.Modules
                 FileName = "ffmpeg",
                 Arguments = input,
                 UseShellExecute = false,
-                RedirectStandardOutput = true
+                RedirectStandardOutput = true,
             };
 
             Process streamingProcess = new Process();
 
             streamingProcess.StartInfo = ffmpeg;
-            streamingProcess.Exited += disconnectAfterAudioEffect;
+            if (AudioService.leaveAfterExecution)
+            { 
+                streamingProcess.Exited += disconnectAfterAudioEffect;
+            }
+            streamingProcess.Exited += cleanVoiceServiceAfterEffect;
             streamingProcess.EnableRaisingEvents = true;
-
 
             streamingProcess.Start();
 
@@ -187,6 +175,11 @@ namespace ShibeBot.Modules
         public void disconnectAfterAudioEffect(object sender, EventArgs e)
         {
             DisconnectFromChannel();
+        }
+
+        public void cleanVoiceServiceAfterEffect(object sender, EventArgs e)
+        {
+            AudioService.audioProcess = null;
         }
 
 

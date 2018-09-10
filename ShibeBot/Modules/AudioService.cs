@@ -14,6 +14,7 @@ namespace ShibeBot.Modules
     {
         public IAudioClient audioClient { get; set; }
         public Process audioProcess { get; set; }
+        public bool leaveAfterExecution = true;
     }
     
 }

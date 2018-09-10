@@ -1,5 +1,8 @@
 ﻿using Discord.Commands;
 using Discord.WebSocket;
+using ShibeBot.Data;
+using System;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace ShibeBot.Modules
@@ -80,10 +83,52 @@ namespace ShibeBot.Modules
             return;
         }
 
+        [Command("sounds")]
+        public async Task sounds()
+        {
+            string reply = "Sounds I know are: \n ";
+
+            reply += String.Join("\n ", Directory.GetFiles(Files.Audio.audioFolder));
+
+            reply = reply.Replace("songs\\", "");
+
+            await ReplyAsync(reply);
+            return;
+        }
+
         [Command("help")]
         public async Task help()
         {
-            string reply = "Commands I know are: \n-help\n-pat <someone-optional>\n-pet <someone-optional>\n-talkto <someone>\n-say <something>\n-arf\n-oof\n-pat\n-bork\n-bork2\n-play <something>\n-stop\n-kick\n-join\n-newtoy\n-cutelaugh\n-nani\n-omae\n-omaenani";
+            string reply = "Commands I know are: \n"+
+                " help \n"+
+                " pat <someone-optional> \n" +
+                " pet <someone-optional> \n" +
+                " talkto <someone> \n" +
+                " say <something> \n" +
+                " sounds \n\n"+
+                "Voice Commands: \n" +
+                " join \n" +
+                " kick \n" +
+                " stop \n" +
+                " arf \n" +
+                " oof \n" +
+                " pat \n" +
+                " bork \n" +
+                " bork2 \n" +
+                " play <something> \n" +
+                " newtoy \n" +
+                " cutelaugh \n" +
+                " nani \n" +
+                " omae \n" +
+                " omaenani \n\n" +
+                "Picture commands: \n" + 
+                " sleepy <number-optional> \n" +
+                " excited <number-optional> \n" +
+                " angery <number-optional> \n" +
+                " heck <number-optional> \n" +
+                " meme <number-optional> \n" +
+                " wow <number-optional> \n" +
+                " shibe \n";
 
             await ReplyAsync(reply);
             return;
